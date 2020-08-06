@@ -827,6 +827,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         boolean inEventLoop = inEventLoop();
         addTask(task);
         if (!inEventLoop) {
+            // debug-netty-start 启动线程
             startThread();
             if (isShutdown()) {
                 boolean reject = false;
@@ -944,6 +945,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
             if (STATE_UPDATER.compareAndSet(this, ST_NOT_STARTED, ST_STARTED)) {
                 boolean success = false;
                 try {
+                    // debug-netty-start 真正执行启动
                     doStartThread();
                     success = true;
                 } finally {

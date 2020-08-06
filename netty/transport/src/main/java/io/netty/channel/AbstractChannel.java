@@ -464,6 +464,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             AbstractChannel.this.eventLoop = eventLoop;
 
+            // 判断当前线程是不是NioEventLoop
             if (eventLoop.inEventLoop()) {
                 register0(promise);
             } else {
@@ -505,6 +506,8 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 pipeline.fireChannelRegistered();
                 // Only fire a channelActive if the channel has never been registered. This prevents firing
                 // multiple channel actives if the channel is deregistered and re-registered.
+
+                // debug-netty-start 判断当前channel是否打开并且绑定,此时并未绑定
                 if (isActive()) {
                     if (firstRegistration) {
                         pipeline.fireChannelActive();
@@ -554,6 +557,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 return;
             }
 
+            // debug-netty-start 激活成功,封装一个任务丢给eventLoop执行fireChannelActive操作
             if (!wasActive && isActive()) {
                 invokeLater(new Runnable() {
                     @Override

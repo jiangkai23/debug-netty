@@ -65,6 +65,8 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
      * {@link SelectorProvider} which is returned by {@link SelectorProvider#provider()}.
      */
     public NioEventLoopGroup(int nThreads, ThreadFactory threadFactory) {
+        // debug-netty-start 创建多路复用器selector
+        // provider = sun.nio.ch.DefaultSelectorProvider.create();根据不同平台返回不同selector实现
         this(nThreads, threadFactory, SelectorProvider.provider());
     }
 
@@ -142,6 +144,7 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
     @Override
     protected EventLoop newChild(Executor executor, Object... args) throws Exception {
         EventLoopTaskQueueFactory queueFactory = args.length == 4 ? (EventLoopTaskQueueFactory) args[3] : null;
+        // debug-netty-start 创建NioEventLoop
         return new NioEventLoop(this, executor, (SelectorProvider) args[0],
             ((SelectStrategyFactory) args[1]).newSelectStrategy(), (RejectedExecutionHandler) args[2], queueFactory);
     }

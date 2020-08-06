@@ -78,6 +78,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
 
         children = new EventExecutor[nThreads];
 
+        // debug-netty-start 创建nThreads个NioEventLoop
         for (int i = 0; i < nThreads; i ++) {
             boolean success = false;
             try {
@@ -87,6 +88,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
                 // TODO: Think about if this is a good exception type
                 throw new IllegalStateException("failed to create a child event loop", e);
             } finally {
+                // debug-netty-start 如果创建失败则将之前创建的NioEventLoop关闭
                 if (!success) {
                     for (int j = 0; j < i; j ++) {
                         children[j].shutdownGracefully();

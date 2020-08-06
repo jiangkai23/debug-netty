@@ -83,6 +83,7 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
 
     @Override
     public ChannelFuture register(Channel channel) {
+        // debug-netty-start 通过选择器选择一个NioEventLoop进行register
         return next().register(channel);
     }
 

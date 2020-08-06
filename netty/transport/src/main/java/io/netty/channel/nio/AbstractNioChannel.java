@@ -377,6 +377,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         boolean selected = false;
         for (;;) {
             try {
+                // debug-netty-start 将当前channel register到NioEventLoop绑定的selector上,0表示不关注任何事件,之后激活设置
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;
             } catch (CancelledKeyException e) {
@@ -409,6 +410,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
 
         readPending = true;
 
+        // debug-netty-start 将channel关注的selector ops设置为OP_READ
         final int interestOps = selectionKey.interestOps();
         if ((interestOps & readInterestOp) == 0) {
             selectionKey.interestOps(interestOps | readInterestOp);

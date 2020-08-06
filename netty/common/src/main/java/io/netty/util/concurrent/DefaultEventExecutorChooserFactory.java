@@ -32,6 +32,7 @@ public final class DefaultEventExecutorChooserFactory implements EventExecutorCh
     @SuppressWarnings("unchecked")
     @Override
     public EventExecutorChooser newChooser(EventExecutor[] executors) {
+        // debug-netty-start 根据待绑定的executor长度是否是2的幂次方来选择
         if (isPowerOfTwo(executors.length)) {
             return new PowerOfTwoEventExecutorChooser(executors);
         } else {
@@ -53,6 +54,7 @@ public final class DefaultEventExecutorChooserFactory implements EventExecutorCh
 
         @Override
         public EventExecutor next() {
+            // debug-netty-start 使用&运算效率更高
             return executors[idx.getAndIncrement() & executors.length - 1];
         }
     }
@@ -67,6 +69,7 @@ public final class DefaultEventExecutorChooserFactory implements EventExecutorCh
 
         @Override
         public EventExecutor next() {
+            // debug-netty-start 通过递增取模取正值的方法选择一个EventLoop
             return executors[Math.abs(idx.getAndIncrement() % executors.length)];
         }
     }

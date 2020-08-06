@@ -1331,6 +1331,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         @Override
         public void bind(
                 ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise promise) {
+            // debug-netty-start 绑定端口
             unsafe.bind(localAddress, promise);
         }
 
@@ -1385,6 +1386,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
         @Override
         public void channelUnregistered(ChannelHandlerContext ctx) {
+            // debug-netty-start 激活channel
             ctx.fireChannelUnregistered();
 
             // Remove all handlers sequentially if channel is closed and unregistered.
