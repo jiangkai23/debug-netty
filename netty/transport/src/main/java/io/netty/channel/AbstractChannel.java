@@ -464,7 +464,8 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             AbstractChannel.this.eventLoop = eventLoop;
 
-            // 判断当前线程是不是NioEventLoop
+            // debug-netty-start 判断当前线程是不是EventLoop
+            // debug-netty-connect
             if (eventLoop.inEventLoop()) {
                 register0(promise);
             } else {
@@ -508,8 +509,10 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 // multiple channel actives if the channel is deregistered and re-registered.
 
                 // debug-netty-start 判断当前channel是否打开并且绑定,此时并未绑定
+                // debug-netty-connect
                 if (isActive()) {
                     if (firstRegistration) {
+                        // debug-netty-connect
                         pipeline.fireChannelActive();
                     } else if (config().isAutoRead()) {
                         // This channel was registered before and autoRead() is set. This means we need to begin read

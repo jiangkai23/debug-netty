@@ -116,6 +116,7 @@ public final class SocketUtils {
             return AccessController.doPrivileged(new PrivilegedExceptionAction<SocketChannel>() {
                 @Override
                 public SocketChannel run() throws IOException {
+                    // debug-netty-connect 创建SocketChannel
                     return serverSocketChannel.accept();
                 }
             });

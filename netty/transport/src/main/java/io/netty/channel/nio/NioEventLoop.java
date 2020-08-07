@@ -482,6 +482,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                 if (ioRatio == 100) {
                     try {
                         if (strategy > 0) {
+                            // debug-netty-select 有事件发生
                             processSelectedKeys();
                         }
                     } finally {
@@ -575,6 +576,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
     private void processSelectedKeys() {
         if (selectedKeys != null) {
+            // debug-netty-select 不用JDK的selector.selectedKeys(),性能更好,垃圾回收更少
             processSelectedKeysOptimized();
         } else {
             processSelectedKeysPlain(selector.selectedKeys());
@@ -646,6 +648,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             // See https://github.com/netty/netty/issues/2363
             selectedKeys.keys[i] = null;
 
+            // debug-netty-select channel注册时的this
             final Object a = k.attachment();
 
             if (a instanceof AbstractNioChannel) {
@@ -691,6 +694,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         }
 
         try {
+            // debug-netty-select 获取selectKey发生的事件
             int readyOps = k.readyOps();
             // We first need to call finishConnect() before try to trigger a read(...) or write(...) as otherwise
             // the NIO JDK channel implementation may throw a NotYetConnectedException.
@@ -712,6 +716,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
             // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
             // to a spin loop
+            //
             if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
                 unsafe.read();
             }

@@ -72,6 +72,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
             try {
                 try {
                     do {
+                        // debug-netty-connect 处理创建连接,返回创建连接数
                         int localRead = doReadMessages(readBuf);
                         if (localRead == 0) {
                             break;
@@ -82,6 +83,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
                         }
 
                         allocHandle.incMessagesRead(localRead);
+                        // debug-netty-connect 判断是否需要继续读
                     } while (allocHandle.continueReading());
                 } catch (Throwable t) {
                     exception = t;
@@ -90,6 +92,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
                 int size = readBuf.size();
                 for (int i = 0; i < size; i ++) {
                     readPending = false;
+                    // debug-netty-connect 创建连接的初始化和注册
                     pipeline.fireChannelRead(readBuf.get(i));
                 }
                 readBuf.clear();
