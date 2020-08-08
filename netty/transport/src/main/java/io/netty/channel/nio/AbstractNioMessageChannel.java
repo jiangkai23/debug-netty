@@ -92,7 +92,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
                 int size = readBuf.size();
                 for (int i = 0; i < size; i ++) {
                     readPending = false;
-                    // debug-netty-connect 创建连接的初始化和注册
+                    // debug-netty-connect channel的初始化和注册。
                     pipeline.fireChannelRead(readBuf.get(i));
                 }
                 readBuf.clear();
