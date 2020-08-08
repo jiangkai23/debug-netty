@@ -139,7 +139,7 @@ public abstract class DefaultMaxMessagesRecvByteBufAllocator implements MaxMessa
 
         @Override
         public boolean continueReading(UncheckedBooleanSupplier maybeMoreDataSupplier) {
-            // debug-netty-connect 判断是否需要继续读,是否配置自动读,是否达到最大读次数16,读取的字节数大于0
+            // debug-netty-connect 判断是否需要继续读,是否配置自动读,是否读满ByteBuf,是否达到最大读次数16,读取的字节数大于0
             return config.isAutoRead() &&
                    (!respectMaybeMoreData || maybeMoreDataSupplier.get()) &&
                    totalMessages < maxMessagePerRead &&
