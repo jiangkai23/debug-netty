@@ -354,6 +354,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     @Override
     public ChannelHandlerContext fireChannelRead(final Object msg) {
+        // debug-netty-pipeline 执行下一个handler的channelRead方法
         invokeChannelRead(findContextInbound(MASK_CHANNEL_READ), msg);
         return this;
     }
@@ -361,7 +362,9 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     static void invokeChannelRead(final AbstractChannelHandlerContext next, Object msg) {
         final Object m = next.pipeline.touch(ObjectUtil.checkNotNull(msg, "msg"), next);
         EventExecutor executor = next.executor();
+        // debug-netty-pipeline 判断当前是否是EventLoop线程分情况执行invokeChannelRead(msg)
         if (executor.inEventLoop()) {
+            // debug-netty-pipeline 当前线程执行
             next.invokeChannelRead(m);
         } else {
             executor.execute(new Runnable() {
@@ -376,6 +379,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     private void invokeChannelRead(Object msg) {
         if (invokeHandler()) {
             try {
+                // debug-netty-pipeline 执行handler的channelRead()方法
                 ((ChannelInboundHandler) handler()).channelRead(this, msg);
             } catch (Throwable t) {
                 invokeExceptionCaught(t);
@@ -874,6 +878,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     }
 
     private AbstractChannelHandlerContext findContextInbound(int mask) {
+        // debug-netty-pipeline 找到下一个需要执行的handler
         AbstractChannelHandlerContext ctx = this;
         EventExecutor currentExecutor = executor();
         do {

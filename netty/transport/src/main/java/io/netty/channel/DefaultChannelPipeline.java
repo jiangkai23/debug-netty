@@ -1409,6 +1409,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            // debug-netty-pipeline 在pipeline上继续传播
             ctx.fireChannelRead(msg);
         }
 

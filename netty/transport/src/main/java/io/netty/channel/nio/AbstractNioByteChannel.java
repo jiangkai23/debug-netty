@@ -135,7 +135,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
                 clearReadPending();
                 return;
             }
-
+            final ChannelPipeline pipeline = pipeline();
             // debug-netty-read ByteBuf分配器
             final ByteBufAllocator allocator = config.getAllocator();
             // debug-netty-read 判断下一次分配的ByteBuf大小
@@ -166,6 +166,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
                     allocHandle.incMessagesRead(1);
                     readPending = false;
                     // debug-netty-read 将读取的数据传递出去
+                    // debug-netty-business 业务逻辑处理的开始
                     pipeline.fireChannelRead(byteBuf);
                     byteBuf = null;
                 } while (allocHandle.continueReading());
