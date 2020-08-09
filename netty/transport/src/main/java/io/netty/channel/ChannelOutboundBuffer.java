@@ -112,6 +112,7 @@ public final class ChannelOutboundBuffer {
      * the message was written.
      */
     public void addMessage(Object msg, int size, ChannelPromise promise) {
+        // debug-netty-write 构建一个entry设置为tailEntry并加入unFlushedEntry队尾
         Entry entry = Entry.newInstance(msg, size, total(msg), promise);
         if (tailEntry == null) {
             flushedEntry = null;
@@ -171,8 +172,9 @@ public final class ChannelOutboundBuffer {
         if (size == 0) {
             return;
         }
-
+        // debug-netty-write 计算待发送数据的size
         long newWriteBufferSize = TOTAL_PENDING_SIZE_UPDATER.addAndGet(this, size);
+        // debug-netty-write 判断待发送数据是否高于水位线,如果是则标示为不可写状态
         if (newWriteBufferSize > channel.config().getWriteBufferHighWaterMark()) {
             setUnwritable(invokeLater);
         }
@@ -191,7 +193,9 @@ public final class ChannelOutboundBuffer {
             return;
         }
 
+        // debug-netty-flush 减少待发送数据
         long newWriteBufferSize = TOTAL_PENDING_SIZE_UPDATER.addAndGet(this, -size);
+        // debug-netty-flush 判断当前待发送数据和低水位
         if (notifyWritability && newWriteBufferSize < channel.config().getWriteBufferLowWaterMark()) {
             setWritable(invokeLater);
         }
@@ -345,6 +349,7 @@ public final class ChannelOutboundBuffer {
             final int readableBytes = buf.writerIndex() - readerIndex;
 
             if (readableBytes <= writtenBytes) {
+                // debug-netty-flush 如果全部写完则重置outboundBuffer数据
                 if (writtenBytes != 0) {
                     progress(readableBytes);
                     writtenBytes -= readableBytes;

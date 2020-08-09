@@ -366,11 +366,15 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         // By default we track the SO_SNDBUF when ever it is explicitly set. However some OSes may dynamically change
         // SO_SNDBUF (and other characteristics that determine how much data can be written at once) so we should try
         // make a best effort to adjust as OS behavior changes.
+        // debug-netty-flush 调整maxBytesPerGatheringWrite的大小
         if (attempted == written) {
             if (attempted << 1 > oldMaxBytesPerGatheringWrite) {
+                // debug-netty-flush 如果ByteBuf中数据都写出去了并且两倍的大小大于
+                // 当前maxBytesPerGatheringWrite则调整maxBytesPerGatheringWrite扩大一倍
                 ((NioSocketChannelConfig) config).setMaxBytesPerGatheringWrite(attempted << 1);
             }
         } else if (attempted > MAX_BYTES_PER_GATHERING_WRITE_ATTEMPTED_LOW_THRESHOLD && written < attempted >>> 1) {
+            // debug-netty-flush 待写大于配置且写出去的值小于当前maxBytesPerGatheringWrite一半则将maxBytesPerGatheringWrite缩小一半
             ((NioSocketChannelConfig) config).setMaxBytesPerGatheringWrite(attempted >>> 1);
         }
     }
@@ -378,8 +382,10 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
     @Override
     protected void doWrite(ChannelOutboundBuffer in) throws Exception {
         SocketChannel ch = javaChannel();
+        // debug-netty-flush 最多只能写16次
         int writeSpinCount = config().getWriteSpinCount();
         do {
+            // debug-netty-flush 判断有没有数据可写
             if (in.isEmpty()) {
                 // All written so clear OP_WRITE
                 clearOpWrite();
@@ -389,7 +395,9 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
 
             // Ensure the pending writes are made of ByteBufs only.
             int maxBytesPerGatheringWrite = ((NioSocketChannelConfig) config).getMaxBytesPerGatheringWrite();
+            // debug-netty-flush 最多返回1024个缓冲区,总大小不要超过maxBytesPerGatheringWrite
             ByteBuffer[] nioBuffers = in.nioBuffers(1024, maxBytesPerGatheringWrite);
+            // debug-netty-flush buffer数量
             int nioBufferCnt = in.nioBufferCount();
 
             // Always us nioBuffers() to workaround data-corruption.
@@ -435,6 +443,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
             }
         } while (writeSpinCount > 0);
 
+        // debug-netty-write 写了16次还是没有写完,创建一个新的flush task,而不是注册写事件
         incompleteWrite(writeSpinCount < 0);
     }
 

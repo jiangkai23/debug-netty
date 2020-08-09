@@ -863,7 +863,9 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         public final void write(Object msg, ChannelPromise promise) {
             assertEventLoop();
 
+            // debug-netty-write 发送数据buffer
             ChannelOutboundBuffer outboundBuffer = this.outboundBuffer;
+            // debug-netty-write 判断channel是否关闭
             if (outboundBuffer == null) {
                 // If the outboundBuffer is null we know the channel was closed and so
                 // need to fail the future right away. If it is not null the handling of the rest
@@ -887,7 +889,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 ReferenceCountUtil.release(msg);
                 return;
             }
-
+            // debug-netty-write 计算msg的size之后将msg加入buffer
             outboundBuffer.addMessage(msg, size, promise);
         }
 
@@ -900,6 +902,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 return;
             }
 
+            // debug-netty-flush 将数据从unflushedEntry加入flushedEntry
             outboundBuffer.addFlush();
             flush0();
         }
@@ -934,6 +937,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             }
 
             try {
+                // debug-netty-flush 执行真正发送数据
                 doWrite(outboundBuffer);
             } catch (Throwable t) {
                 if (t instanceof IOException && config().isAutoClose()) {
