@@ -1397,6 +1397,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) {
+            // debug-netty-start 继续向后调用
             ctx.fireChannelActive();
 
             readIfIsAutoRead();
